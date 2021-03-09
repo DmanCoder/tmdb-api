@@ -16,7 +16,9 @@
     "config": "^3.3.6",
     "express": "^4.17.1",
     "express-validator": "^6.10.0",
-    "request": "^2.88.2"
+    "querystring": "^0.2.1",
+    "request": "^2.88.2",
+    "url": "^0.11.0"
   },
   "devDependencies": {
     "concurrently": "^6.0.0",
