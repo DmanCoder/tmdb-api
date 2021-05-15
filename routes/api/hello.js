@@ -7,8 +7,7 @@ const router = express.Router();
 // @access   Public
 
 router.get('/', (req, res) => {
-  res.status(204);
-  res.json({});
+  res.json({ test: 'testing' });
 });
 
 module.exports = router;
