@@ -7,7 +7,8 @@ const router = express.Router();
 // @access   Public
 
 router.get('/', (req, res) => {
-  res.json({ test: 'testing' });
+  console.log('testing', process.env.TMDb_API);
+  res.json({ test: 'testing', key: process.env.TMDb_API, king: 'me' });
 });
 
 module.exports = router;
