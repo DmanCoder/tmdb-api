@@ -40,7 +40,9 @@ router.get('/', (req, res) => {
     .catch((errors) => {
       const { data } = errors.response;
 
-      res.send({ data: { ...data, message: 'Issues Fetching results' } });
+      res.send({
+        data: { errors: { ...data, message: 'Issues Fetching results' } },
+      });
     });
 });
 
