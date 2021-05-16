@@ -1,4 +1,4 @@
-const axios = require('axios');
+const axios = require('../../../api/init');
 const express = require('express');
 const router = express.Router();
 
@@ -29,9 +29,7 @@ router.get('/', (req, res) => {
 
   // Get popular movies
   axios
-    .get(
-      `https://api.themoviedb.org/3/tv/popular?api_key=${TMDb_API}&language=${language}&page=1`
-    )
+    .get(`/tv/popular?api_key=${TMDb_API}&language=${language}&page=1`)
     .then((response) => {
       const { data } = response;
 
