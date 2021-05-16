@@ -27,9 +27,7 @@ router.get('/', (req, res) => {
   const { errors, isValid } = validatePopularTv(queryObject);
   if (!isValid) {
     res.status(400);
-    return res.send({
-      data: { errors },
-    });
+    return res.send({ errors });
   }
 
   // Get popular movies
