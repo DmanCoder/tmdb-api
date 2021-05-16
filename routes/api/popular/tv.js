@@ -1,8 +1,14 @@
 const axios = require('../../../api/init');
 const express = require('express');
+const url = require('url');
+
 const router = express.Router();
 
+// Utilities
 const isEmpty = require('../../../utils/isEmpty');
+
+// Validators
+const validatePopularTv = require('../../../validations/popular/tv');
 
 /**
  * @dec       This API makes a request to TMDb API and returns the request
@@ -13,23 +19,25 @@ const isEmpty = require('../../../utils/isEmpty');
  * @access    Public
  */
 router.get('/', (req, res) => {
-  // Expected headers
-  const { language } = req.headers;
+  // Expected params
+  const queryObject = url.parse(req.url, true).query;
+  const { language, page } = queryObject;
 
   // API access key
   const { TMDb_API } = process.env;
 
-  // Reject if language is not selected
-  if (isEmpty(language)) {
+  // Reject if expected params are not present
+  const { errors, isValid } = validatePopularTv(queryObject);
+  if (!isValid) {
     res.status(400);
     return res.send({
-      data: { errors: { message: 'Please provide language' } },
+      data: { errors },
     });
   }
 
   // Get popular movies
   axios
-    .get(`/tv/popular?api_key=${TMDb_API}&language=${language}&page=1`)
+    .get(`/tv/popular?api_key=${TMDb_API}&language=${language}&page=${page}`)
     .then((response) => {
       const { data } = response;
 
