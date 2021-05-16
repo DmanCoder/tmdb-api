@@ -4,9 +4,6 @@ const url = require('url');
 
 const router = express.Router();
 
-// Utilities
-const isEmpty = require('../../../utils/isEmpty');
-
 // Validators
 const validatePopularTv = require('../../../validations/popular/tv');
 
@@ -40,15 +37,11 @@ router.get('/', (req, res) => {
     .get(`/tv/popular?api_key=${TMDb_API}&language=${language}&page=${page}`)
     .then((response) => {
       const { data } = response;
-
-      res.send({ data });
+      res.send(data);
     })
     .catch((errors) => {
       const { data } = errors.response;
-
-      res.send({
-        data: { errors: { ...data, message: 'Issues Fetching results' } },
-      });
+      res.send({ errors: { ...data, message: 'Issues Fetching results' } });
     });
 });
 
