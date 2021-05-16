@@ -1,11 +1,10 @@
 const express = require('express');
 const app = express();
+
 require('dotenv').config();
 
 // Define routes
-// app.use('/api/hello', require('./routes/api/hello'));
-app.use('/hello', require('./routes/api/hello'));
-
+app.use('/api/popular/tv', require('./routes/api/popular/tv'));
 
 const PORT = process.env.PORT || 5000;
 
