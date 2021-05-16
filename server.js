@@ -1,9 +1,12 @@
 const express = require('express');
+const cors = require('cors');
+
 const app = express();
 
 require('dotenv').config();
 
 // Define routes
+app.use(cors());
 app.use('/api/popular/tv', require('./routes/api/popular/tv'));
 app.use('/api/tv/on_the_air', require('./routes/api/free/tv'));
 app.use('/api/trending/all/week', require('./routes/api/trending/trending'));
