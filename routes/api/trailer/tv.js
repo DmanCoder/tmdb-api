@@ -1,6 +1,7 @@
 const axios = require('axios');
 const express = require('express');
 const url = require('url');
+const isEmpty = require('../../../utils/isEmpty');
 
 const router = express.Router();
 
@@ -63,8 +64,15 @@ router.get('/', (req, res) => {
           axios.spread((...allRes) => {
             // Add `trailers` to the results object
             allRes.map((vid, index) => {
-              results[index].trailers = vid.data;
+              if (!isEmpty(vid.data.results)) {
+                results[index].trailers = vid.data;
+              } else {
+                delete results[index];
+              }
             });
+
+            // Filter empty slots
+            results = results.filter((item) => !isEmpty(item));
 
             res.send({ ...data, results });
           })
