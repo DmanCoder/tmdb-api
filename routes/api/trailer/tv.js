@@ -45,7 +45,7 @@ router.get('/', (req, res) => {
       );
 
       // Only the first 12 is sent through
-      results = results.slice(0, 12);
+      // results = results.slice(0, 12);
 
       // Stores multiple requests
       const multiReq = [];
