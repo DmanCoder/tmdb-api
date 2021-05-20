@@ -11,6 +11,7 @@ app.use('/api/popular/tv', require('./routes/api/popular/tv'));
 app.use('/api/tv/on_the_air', require('./routes/api/free/tv'));
 app.use('/api/trending/all/week', require('./routes/api/trending/trending'));
 app.use('/api/search/multi', require('./routes/api/search/search'));
+app.use('/api/trailer/tv', require('./routes/api/trailer/tv'));
 
 const PORT = process.env.PORT || 5000;
 
