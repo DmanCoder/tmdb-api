@@ -5,7 +5,7 @@ const url = require('url');
 const router = express.Router();
 
 // Validators
-const validateUniversal = require('../../../validations/trending/trending');
+const validateUniversal = require('../../../validations/universal/universal');
 
 /**
  * @dec       This API makes a request to TMDb API and returns the request
@@ -18,7 +18,7 @@ const validateUniversal = require('../../../validations/trending/trending');
 router.get('/', (req, res) => {
   // Expected params
   const queryObject = url.parse(req.url, true).query;
-  const { id, language, page } = queryObject;
+  const { media_type, id, language, page } = queryObject;
 
   // API access key
   const { TMDb_API } = process.env;
@@ -32,7 +32,9 @@ router.get('/', (req, res) => {
 
   // Get popular movies
   axios
-    .get(`/tv/${id}?api_key=${TMDb_API}&language=${language}&page=${page}`)
+    .get(
+      `/${media_type}/${id}?api_key=${TMDb_API}&language=${language}&page=${page}`
+    )
     .then((response) => {
       const { data } = response;
       res.send(data);

@@ -6,6 +6,8 @@ const validateUniversal = (data) => {
   // Check if expected params has been passed in
   data.language = !isEmpty(data.language) ? data.language : '';
   data.page = !isEmpty(data.page) ? data.page : '';
+  data.id = !isEmpty(data.id) ? data.id : '';
+  data.media_type = !isEmpty(data.media_type) ? data.media_type : '';
 
   // Feedback accumulator
   if (isEmpty(data.language)) {
@@ -15,7 +17,12 @@ const validateUniversal = (data) => {
   if (isEmpty(data.page)) {
     errors.page = '`page` is empty or has not been passed in as a query param';
   }
-
+  if (isEmpty(data.id)) {
+    errors.id = '`id` is empty or has not been passed in as a query param';
+  }
+  if (isEmpty(data.media_type)) {
+    errors.media_type = '`media_type` is empty or has not been passed in as a query param';
+  }
   // return errors
   return {
     errors,

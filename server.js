@@ -12,7 +12,7 @@ app.use('/api/tv/on_the_air', require('./routes/api/free/tv'));
 app.use('/api/trending/all/week', require('./routes/api/trending/trending'));
 app.use('/api/search/multi', require('./routes/api/search/search'));
 app.use('/api/trailers/tv', require('./routes/api/trailer/tv'));
-app.use('/api/tv/details', require('./routes/api/universal/tv'));
+app.use('/api/tv/details', require('./routes/api/universal/universal'));
 
 const PORT = process.env.PORT || 5000;
 
