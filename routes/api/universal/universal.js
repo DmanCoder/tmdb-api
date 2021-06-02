@@ -1,4 +1,4 @@
-const axios = require('../../../api/init');
+const axios = require('axios');
 const express = require('express');
 const url = require('url');
 
@@ -30,19 +30,49 @@ router.get('/', (req, res) => {
     return res.send({ errors });
   }
 
-  // Get popular movies
+  const baseURL = 'https://api.themoviedb.org/3';
+
+  const details = axios.get(
+    `${baseURL}/${media_type}/${id}?api_key=${TMDb_API}&language=${language}&page=${page}`
+  );
+  const contentRating = axios.get(
+    `${baseURL}/${media_type}/${id}?api_key=${TMDb_API}&append_to_response=releases&language=en-US`
+  );
+
   axios
-    .get(
-      `/${media_type}/${id}?api_key=${TMDb_API}&language=${language}&page=${page}`
+    .all([details, contentRating])
+    .then(
+      axios.spread((...responses) => {
+        const details = responses[0];
+        const contentRating = responses[1];
+
+        console.log(responses[1].data);
+        res.send({
+          ...details.data,
+          content_rating: contentRating.data.releases,
+        });
+
+        // use/access the results
+      })
     )
-    .then((response) => {
-      const { data } = response;
-      res.send(data);
-    })
     .catch((errors) => {
-      const { data } = errors.response;
-      res.send({ errors: { ...data, message: 'Issues Fetching results' } });
+      // react on errors.
+      res.send(errors);
     });
+
+  // Get popular movies
+  // axios
+  //   .get(
+  //     `/${media_type}/${id}?api_key=${TMDb_API}&language=${language}&page=${page}`
+  //   )
+  //   .then((response) => {
+  //     const { data } = response;
+  //     res.send(data);
+  //   })
+  //   .catch((errors) => {
+  //     const { data } = errors.response;
+  //     res.send({ errors: { ...data, message: 'Issues Fetching results' } });
+  //   });
 });
 
 module.exports = router;
