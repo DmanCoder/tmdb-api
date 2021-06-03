@@ -1,6 +1,7 @@
 const axios = require('axios');
 const express = require('express');
 const url = require('url');
+const isEmpty = require('../../../utils/isEmpty');
 
 const router = express.Router();
 
@@ -35,44 +36,59 @@ router.get('/', (req, res) => {
   const details = axios.get(
     `${baseURL}/${media_type}/${id}?api_key=${TMDb_API}&language=${language}&page=${page}`
   );
-  const contentRating = axios.get(
-    `${baseURL}/${media_type}/${id}?api_key=${TMDb_API}&append_to_response=releases&language=en-US`
-  );
+
+  console.log(media_type);
+  let contentRating;
+  if (media_type === 'movie') {
+    contentRating = axios.get(
+      `${baseURL}/${media_type}/${id}?api_key=${TMDb_API}&append_to_response=releases&language=en-US`
+    );
+  } else if (media_type === 'tv') {
+    contentRating = axios.get(
+      `${baseURL}/${media_type}/${id}/content_ratings?api_key=${TMDb_API}&language=en-US`
+    );
+  }
 
   axios
     .all([details, contentRating])
     .then(
       axios.spread((...responses) => {
-        const details = responses[0];
-        const contentRating = responses[1];
+        const detailsRes = responses[0];
+        const contentRatingRes = responses[1];
 
-        console.log(responses[1].data);
+        let rating;
+        if (media_type === 'tv') {
+          rating = contentRatingRes.data.results.find(
+            (item) => item.iso_3166_1.toLowerCase() === 'us' && !isEmpty(item.rating)
+          );
+          console.log(rating);
+          rating = {
+            certificate: rating.rating,
+            iso_3166_1: rating.iso_3166_1,
+          };
+        } else if (media_type === 'movie') {
+          rating = contentRatingRes.data.releases.countries.find(
+            (item) => item.iso_3166_1.toLowerCase() === 'us' & !isEmpty(item.certification)
+          );
+          console.log(rating)
+          rating = {
+            certificate: rating.certification,
+            iso_3166_1: rating.iso_3166_1,
+          };
+        } else {
+          rating = {};
+        }
+
         res.send({
-          ...details.data,
-          content_rating: contentRating.data.releases,
+          ...detailsRes.data,
+          content_rating: rating,
         });
-
-        // use/access the results
       })
     )
     .catch((errors) => {
-      // react on errors.
-      res.send(errors);
+      const { data } = errors.response;
+      res.send({ errors: { ...data, message: 'Issues Fetching results' } });
     });
-
-  // Get popular movies
-  // axios
-  //   .get(
-  //     `/${media_type}/${id}?api_key=${TMDb_API}&language=${language}&page=${page}`
-  //   )
-  //   .then((response) => {
-  //     const { data } = response;
-  //     res.send(data);
-  //   })
-  //   .catch((errors) => {
-  //     const { data } = errors.response;
-  //     res.send({ errors: { ...data, message: 'Issues Fetching results' } });
-  //   });
 });
 
 module.exports = router;
