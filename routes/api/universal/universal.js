@@ -59,18 +59,24 @@ router.get('/', (req, res) => {
         let rating;
         if (media_type === 'tv') {
           rating = contentRatingRes.data.results.find(
-            (item) => item.iso_3166_1.toLowerCase() === 'us' && !isEmpty(item.rating)
+            (item) => item.iso_3166_1.toLowerCase() === 'us'
           );
-          console.log(rating);
+
+          if (isEmpty(rating)) rating = contentRatingRes.data.results[0];
+
           rating = {
             certificate: rating.rating,
             iso_3166_1: rating.iso_3166_1,
           };
         } else if (media_type === 'movie') {
           rating = contentRatingRes.data.releases.countries.find(
-            (item) => item.iso_3166_1.toLowerCase() === 'us' & !isEmpty(item.certification)
+            (item) =>
+              (item.iso_3166_1.toLowerCase() === 'us') &
+              !isEmpty(item.certification)
           );
-          console.log(rating)
+
+          if (isEmpty(rating)) rating = contentRatingRes.data.releases.countries[0];
+
           rating = {
             certificate: rating.certification,
             iso_3166_1: rating.iso_3166_1,
