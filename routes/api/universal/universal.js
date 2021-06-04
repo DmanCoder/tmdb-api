@@ -36,6 +36,9 @@ router.get('/', (req, res) => {
   const details = axios.get(
     `${baseURL}/${media_type}/${id}?api_key=${TMDb_API}&language=${language}&page=${page}`
   );
+  const credits = axios.get(
+    `${baseURL}/${media_type}/${id}/credits?api_key=${TMDb_API}&language=${language}&page=${page}`
+  );
 
   console.log(media_type);
   let contentRating;
@@ -50,11 +53,12 @@ router.get('/', (req, res) => {
   }
 
   axios
-    .all([details, contentRating])
+    .all([details, contentRating, credits])
     .then(
       axios.spread((...responses) => {
         const detailsRes = responses[0];
         const contentRatingRes = responses[1];
+        const creditsRes = responses[2];
 
         let rating;
         if (media_type === 'tv') {
@@ -64,10 +68,17 @@ router.get('/', (req, res) => {
 
           if (isEmpty(rating)) rating = contentRatingRes.data.results[0];
 
-          rating = {
-            certificate: rating.rating,
-            iso_3166_1: rating.iso_3166_1,
-          };
+          if (isEmpty(contentRatingRes.data.results)) {
+            rating = {
+              certificate: '',
+              iso_3166_1: '',
+            };
+          } else {
+            rating = {
+              certificate: rating.rating || '',
+              iso_3166_1: rating.iso_3166_1 || '',
+            };
+          }
         } else if (media_type === 'movie') {
           rating = contentRatingRes.data.releases.countries.find(
             (item) =>
@@ -75,7 +86,8 @@ router.get('/', (req, res) => {
               !isEmpty(item.certification)
           );
 
-          if (isEmpty(rating)) rating = contentRatingRes.data.releases.countries[0];
+          if (isEmpty(rating))
+            rating = contentRatingRes.data.releases.countries[0];
 
           rating = {
             certificate: rating.certification,
@@ -85,15 +97,19 @@ router.get('/', (req, res) => {
           rating = {};
         }
 
+        console.log(creditsRes.data);
+
         res.send({
           ...detailsRes.data,
           content_rating: rating,
+          cast_credit: creditsRes.data,
         });
       })
     )
     .catch((errors) => {
-      const { data } = errors.response;
-      res.send({ errors: { ...data, message: 'Issues Fetching results' } });
+      // const { data } = errors.response;
+      console.log(errors);
+      res.send({ errors: { message: 'Issues Fetching results' } });
     });
 });
 
