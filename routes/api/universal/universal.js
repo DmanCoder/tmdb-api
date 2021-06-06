@@ -42,6 +42,9 @@ router.get('/', (req, res) => {
   const recommendations = axios.get(
     `${baseURL}/${media_type}/${id}/recommendations?api_key=${TMDb_API}&language=${language}&page=${page}`
   );
+  const trailers = axios.get(
+    `${baseURL}/${media_type}/${id}/videos?api_key=${TMDb_API}&language=${language}&page=${page}`
+  );
 
   console.log(media_type);
   let contentRating;
@@ -56,13 +59,14 @@ router.get('/', (req, res) => {
   }
 
   axios
-    .all([details, contentRating, credits,recommendations])
+    .all([details, contentRating, credits, recommendations, trailers])
     .then(
       axios.spread((...responses) => {
         const detailsRes = responses[0];
         const contentRatingRes = responses[1];
         const creditsRes = responses[2];
         const recommendationsRes = responses[3];
+        const trailersRes = responses[4];
 
         let rating;
         if (media_type === 'tv') {
@@ -100,14 +104,12 @@ router.get('/', (req, res) => {
         } else {
           rating = {};
         }
-
-        console.log(creditsRes.data);
-
         res.send({
           ...detailsRes.data,
           content_rating: rating,
           cast_credit: creditsRes.data,
           recommendations: recommendationsRes.data,
+          trailers: trailersRes.data,
         });
       })
     )
